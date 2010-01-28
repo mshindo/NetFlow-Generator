@@ -1,0 +1,238 @@
+.\" 
+.\" Copyright (c) 2004-2010  by Motonori Shindo <mshindo@mshindo.net>
+.\"
+.\" This program is free software; you can redistribute it and/or
+.\" modify it under the terms of the GNU General Public License
+.\" as published by the Free Software Foundation; either version 2
+.\" of the License, or (at your option) any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program; if not, write to the Free Software
+.\" Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+.\"
+.Dd January 26, 2010
+.Os UNIX
+.Dt flowgen 1 LOCAL
+.Sh NAME
+.Nm flowgen
+.Nd generate various NetFlow V5 packets
+.Sh SYNOPSIS
+.Nm
+.Op Ar options
+.Op Ar flowrec-options
+.Ar collector
+.Sh DESCRIPTION
+.Nm
+generates NetFlow V5 packets in various ways. This tool is intended to be used when
+you want to test software/hardware that receives NetFlow V5 packets (e.g. NetFlow
+Collector).
+.Pp
+.Ar collector
+is an IPv4 address to which this software send NetFlow packets.
+.Pp
+There are two types of options you can specify. One is
+.Ar options ,
+and another is
+.Ar flowrec-options .
+In general, 
+.Ar options 
+controls how NetFlow V5 packets are generated, whereas
+.Ar flowrec-options
+controls how each flow record is populated in the NetFlow packet.
+.Sh OPTIONS
+.Bl -tag -width "1234567890123" -compact
+.It Fl n Ar count
+.It Fl Fl count Ar count
+specifies the number of flow records to be generated. By default, it is 0 which means
+"infinite" times.
+.Pp
+.It Fl p Ar port
+.It Fl Fl port Ar port
+specifies the destination port number that will be used for NetFlow packets. By
+default, it is 2055.
+.Pp
+.It Fl V Ar n
+.It Fl Fl version Ar n
+specifies the version number of NetFlow. This option is for future use.
+It is currently hard coded to 5.
+.Pp
+.It Fl f Ar number
+.It Fl Fl flowrec Ar number
+specifies the number of flow records which are filled into the NetFlow packet.
+By default, it is 30, the maximum number in NetFlow V5.
+.Pp
+.It Fl d Ar level
+.It Fl Fl debug Ar level
+specifies the debug level. The greater of this level, the more verbose output will
+be displayed. Default is 0, which disables the debug mode.
+.Pp
+.It Fl N
+.It Fl Fl nosend
+When this flag is specified, no NetFlow packets will be generated.
+.Pp
+.It Fl h
+.It Fl Fl help
+displays help message.
+.Pp
+.El
+.Sh FLOW RECORD OPTIONS
+.Ar flowrec-options
+control how flow records are populated in NetFlow packet. Most options 
+have a corresponding field in the NetFlow flow record. Exceptions are 
+.Cm enginetype
+and
+.Cm engineid
+options. In fact these two parameters appear in a NetFlow header, not in a flow 
+record. However, let's regard these two options a
+.Ar flowrec-options
+because they share one important property with other
+.Ar flowrec-options
+described in the following paragraph.
+.Pp
+All
+.Ar flowrec-options
+take a parameter as an
+.Ar expression.
+This
+.Ar expression
+is evaluated every time a flow record is populated (for 
+.Cm enginetype
+and
+.Cm engineid
+options, every time a NetFlow packet is generated.
+.Pp
+.Ar expression
+is a number that may change every time it is evaluated. There are four
+types of expressions; Sequential, Random, Probabilistic, and Static.
+.Pp
+Sequential expression
+is expressed using the meta character '-'. For example, the expression 
+'10-20' is evaluated as 10, 11, ... 20 and then wraps around to 10. 
+Please note that start number and end number are specified as "inclusive".
+.Pp
+Random expression is expressed using the meta character ':'. For example, 
+'10:20' is evaluated to the number ranging from 10 to 20 randomly. Each 
+number has the same probability of occurrence. Start and end number are 
+specified as "inclusive".
+.Pp
+Probabilistic expression generates a certain number with a specified probability.
+For example, the expression "100@70,200@20,300@10" is evaluated to one of
+100, 200, or 300 with
+the probability of 70%, 20%, 10% respectively. It is a user's responsibility
+to specify the probability that add up to 100% altogether. You can enumerate 
+any number of "number@probability" pairs concatenated by ','.
+.Pp
+Static expression doesn't include any meta characters such as '-', ':', '@'
+and ','. The expression is always evaluated to the value itself and doesn't
+change forever.
+.Pp
+The usage of expression is not limited to denote a simple value parameter. It can
+also be used to express IPv4 address. For example, "192.168.0.1-254" will
+be evaluated to the IPv4 address whose first three octets are "192.168.0" and 
+the 4th octet ranging from 1 to 254 sequentially.
+.Pp
+.Bl -tag -width "1234567890123" -compact
+.It Fl w Ar msec
+.It Fl Fl wait Ar msec
+specifies the duration of pause (wait) that will be placed at each
+flow record generation. It is specified in millisecond (ms). 
+The default of this option is the expression "0", which means
+that flow records will be generated at a maximum speed. 
+This option can be used in conjunction with
+.Cm interval
+option to get a sub-millisecond wait duration effectively.
+.Pp
+.It Fl i Ar num
+.It Fl Fl interval Ar num
+specifies the number of interval between two pauses that will be placed. 
+For example, if
+.Cm wait
+is specified as 1 and
+.Cm interval
+is specified as 100, then 1 millisecond pause will be placed in every 100
+flow records. The default is the expression "1", which means that the pause
+specified by
+.Cm wait
+option will be placed in every flow record generation.
+.Pp
+.It Fl Fl srcaddr Ar ip-address
+is a source IPv4 address field in a flow record. The default is the expression
+"10.0.0.1:254".
+.Pp
+.It Fl Fl dstaddr Ar ip-address
+is a destination IPv4 address field in a flow record. The default is the expression
+"20.0.0.1:254".
+.Pp
+.It Fl Fl nexthop Ar ip-address
+is a IPv4 nexthop address field in a flow record. The default is the expression
+"30.0.0.254".
+.Pp
+.It Fl Fl inputif Ar ifindex
+is an IfIndex number of the input (i.e. ingress) interface field in a flow record.
+The default is the expression "1".
+.Pp
+.It Fl Fl outputif Ar ifindex
+is an IfIndex number of the output (i.e. egress) interface field in a flow record.
+The default is the expression "2".
+.Pp
+.It Fl Fl packets Ar num
+is a number of packets field in a flow record. The default is the expression
+"10:1000".
+.Pp
+.It Fl Fl octets Ar num
+is a number of octets field in a flow record. The default is the expression
+"300:300000".
+.Pp
+.It Fl Fl firstseen Ar msec
+represents how long ago (in milli-second) the first flow packet was observed 
+since the last flow was observed. The default value is the expression "10:1000".
+.Pp
+.It Fl Fl lastseen Ar msec
+represents how long ago (in milli-second) the last flow packet was observed 
+since the time of flow record generation. The default value is the expression "0", 
+which means "the last flow was seen at the very instant of flow record generation".
+.Pp
+.It Fl Fl srcport Ar num
+is a source port number field in a flow record. The default is the expression
+"1001-2000".
+.Pp
+.It Fl Fl dstport Ar num
+is a destination port number field in a flow record. The default is the expression
+"3001-4000".
+.Pp
+.It Fl Fl tcpflags Ar num
+is a TCP flags field in a flow record. The default is the expression "27", which
+represents the cumulative OR of ACK, PSH, SYN, and FIN.
+.Pp
+.It Fl Fl protocol Ar num
+is a protocol field in a flow record. The default is the expression "6", which
+represents TCP.
+.Pp
+.It Fl Fl tos Ar num
+is a ToS field in a flow record. The default is the expression "0".
+.Pp
+.It Fl Fl srcas Ar num
+is a source AS number field in a flow record. The default is the expression 
+"101-110".
+.Pp
+.It Fl Fl dstas Ar num
+is a destination AS number field in a flow record. The default is the 
+expression "201-210".
+.Pp
+.It Fl Fl srcmask Ar num
+is a source netmask field in a flow record. The default is the 
+expression "24".
+.Pp
+.It Fl Fl dstmask Ar num
+is a destination netmask field in a flow record. The default is the 
+expression "24".
+.Pp
+.Sh AUTHORS
+.Nm
+is implemented by
+.An "Motonori Shindo" Aq mshindo@mshindo.net

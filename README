@@ -1,0 +1,9 @@
+This program generates NetFlow V5 packets in various ways. It is useful 
+when you want to test software that receives NetFlow V5 packets (e.g. 
+NetFlow Collector).
+
+How to compile & install this program:
+
+ 1. Edit Makefile accordingly
+ 2. make
+ 3. sudo make install
