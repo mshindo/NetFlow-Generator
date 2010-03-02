@@ -351,6 +351,7 @@ void flush_flow(void)
   for (i=0; i < Ex.flow_cnt; i++) {
     memcpy(&pdu.rec[i].src_addr, &Ex.fi[i].src_addr, sizeof(struct in_addr));
     memcpy(&pdu.rec[i].dst_addr, &Ex.fi[i].dst_addr, sizeof(struct in_addr));
+    memcpy(&pdu.rec[i].nexthop, &Ex.fi[i].nexthop, sizeof(struct in_addr));
     pdu.rec[i].in_if = htons(Ex.fi[i].in_if);
     pdu.rec[i].out_if = htons(Ex.fi[i].out_if);
     pdu.rec[i].packets = htonl(Ex.fi[i].packets);
@@ -679,6 +680,7 @@ int main(int argc, char **argv)
     printf("eng_id    = %s\n",  engine_id);
     printf("src_addr  = %s\n",  src_addr);
     printf("dst_addr  = %s\n",  dst_addr);
+    printf("nexthop   = %s\n",  nexthop);
     printf("in_if     = %s\n",  in_if);
     printf("out_if    = %s\n",  out_if);
     printf("packets   = %s\n",  packets);
