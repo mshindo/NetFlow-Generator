@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2016  by Motonori Shindo <motonori@shin.do>
+ * Copyright (c) 2004-2017  by Motonori Shindo <motonori@shin.do>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
