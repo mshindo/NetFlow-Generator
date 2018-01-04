@@ -1,5 +1,5 @@
-.\" 
-.\" Copyright (c) 2004-2017  by Motonori Shindo <motonori@shin.do>
+.\"
+.\" Copyright (c) 2004-2018  by Motonori Shindo <motonori@shin.do>
 .\"
 .\" This program is free software; you can redistribute it and/or
 .\" modify it under the terms of the GNU General Public License
@@ -39,8 +39,8 @@ There are two types of options you can specify. One is
 .Ar options ,
 and another is
 .Ar flowrec-options .
-In general, 
-.Ar options 
+In general,
+.Ar options
 controls how NetFlow V5 packets are generated, whereas
 .Ar flowrec-options
 controls how each flow record is populated in the NetFlow packet.
@@ -82,12 +82,12 @@ displays help message.
 .El
 .Sh FLOW RECORD OPTIONS
 .Ar flowrec-options
-control how flow records are populated in NetFlow packet. Most options 
-have a corresponding field in the NetFlow flow record. Exceptions are 
+control how flow records are populated in NetFlow packet. Most options
+have a corresponding field in the NetFlow flow record. Exceptions are
 .Cm enginetype
 and
 .Cm engineid
-options. In fact these two parameters appear in a NetFlow header, not in a flow 
+options. In fact these two parameters appear in a NetFlow header, not in a flow
 record. However, let's regard these two options a
 .Ar flowrec-options
 because they share one important property with other
@@ -100,7 +100,7 @@ take a parameter as an
 .Ar expression.
 This
 .Ar expression
-is evaluated every time a flow record is populated (for 
+is evaluated every time a flow record is populated (for
 .Cm enginetype
 and
 .Cm engineid
@@ -111,20 +111,20 @@ is a number that may change every time it is evaluated. There are four
 types of expressions; Sequential, Random, Probabilistic, and Static.
 .Pp
 Sequential expression
-is expressed using the meta character '-'. For example, the expression 
-'10-20' is evaluated as 10, 11, ... 20 and then wraps around to 10. 
+is expressed using the meta character '-'. For example, the expression
+'10-20' is evaluated as 10, 11, ... 20 and then wraps around to 10.
 Please note that start number and end number are specified as "inclusive".
 .Pp
-Random expression is expressed using the meta character ':'. For example, 
-'10:20' is evaluated to the number ranging from 10 to 20 randomly. Each 
-number has the same probability of occurrence. Start and end number are 
+Random expression is expressed using the meta character ':'. For example,
+'10:20' is evaluated to the number ranging from 10 to 20 randomly. Each
+number has the same probability of occurrence. Start and end number are
 specified as "inclusive".
 .Pp
 Probabilistic expression generates a certain number with a specified probability.
 For example, the expression "100@70,200@20,300@10" is evaluated to one of
 100, 200, or 300 with
 the probability of 70%, 20%, 10% respectively. It is a user's responsibility
-to specify the probability that add up to 100% altogether. You can enumerate 
+to specify the probability that add up to 100% altogether. You can enumerate
 any number of "number@probability" pairs concatenated by ','.
 .Pp
 Static expression doesn't include any meta characters such as '-', ':', '@'
@@ -133,23 +133,23 @@ change forever.
 .Pp
 The usage of expression is not limited to denote a simple value parameter. It can
 also be used to express IPv4 address. For example, "192.168.0.1-254" will
-be evaluated to the IPv4 address whose first three octets are "192.168.0" and 
+be evaluated to the IPv4 address whose first three octets are "192.168.0" and
 the 4th octet ranging from 1 to 254 sequentially.
 .Pp
 .Bl -tag -width "1234567890123" -compact
 .It Fl w Ar msec
 .It Fl Fl wait Ar msec
 specifies the duration of pause (wait) that will be placed at each
-flow record generation. It is specified in millisecond (ms). 
+flow record generation. It is specified in millisecond (ms).
 The default of this option is the expression "0", which means
-that flow records will be generated at a maximum speed. 
+that flow records will be generated at a maximum speed.
 This option can be used in conjunction with
 .Cm interval
 option to get a sub-millisecond wait duration effectively.
 .Pp
 .It Fl i Ar num
 .It Fl Fl interval Ar num
-specifies the number of interval between two pauses that will be placed. 
+specifies the number of interval between two pauses that will be placed.
 For example, if
 .Cm wait
 is specified as 1 and
@@ -189,12 +189,12 @@ is a number of octets field in a flow record. The default is the expression
 "300:300000".
 .Pp
 .It Fl Fl firstseen Ar msec
-represents how long ago (in milli-second) the first flow packet was observed 
+represents how long ago (in milli-second) the first flow packet was observed
 since the last flow was observed. The default value is the expression "10:1000".
 .Pp
 .It Fl Fl lastseen Ar msec
-represents how long ago (in milli-second) the last flow packet was observed 
-since the time of flow record generation. The default value is the expression "0", 
+represents how long ago (in milli-second) the last flow packet was observed
+since the time of flow record generation. The default value is the expression "0",
 which means "the last flow was seen at the very instant of flow record generation".
 .Pp
 .It Fl Fl srcport Ar num
@@ -217,19 +217,19 @@ represents TCP.
 is a ToS field in a flow record. The default is the expression "0".
 .Pp
 .It Fl Fl srcas Ar num
-is a source AS number field in a flow record. The default is the expression 
+is a source AS number field in a flow record. The default is the expression
 "101-110".
 .Pp
 .It Fl Fl dstas Ar num
-is a destination AS number field in a flow record. The default is the 
+is a destination AS number field in a flow record. The default is the
 expression "201-210".
 .Pp
 .It Fl Fl srcmask Ar num
-is a source netmask field in a flow record. The default is the 
+is a source netmask field in a flow record. The default is the
 expression "24".
 .Pp
 .It Fl Fl dstmask Ar num
-is a destination netmask field in a flow record. The default is the 
+is a destination netmask field in a flow record. The default is the
 expression "24".
 .Pp
 .Sh AUTHORS

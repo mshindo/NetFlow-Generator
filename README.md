@@ -1,14 +1,14 @@
 flowgen
 =======
 
-by Motonori Shindo <motonori@shin.do> (2004 - 2017)
+by Motonori Shindo <motonori@shin.do> (2004 - 2018)
 
 Introduction
 ------------
 
-This program allows you to generate NetFlow V5 packets in various ways and 
-send them to NetFlow collectors. You can control how each flow record 
-should look like by using an "expression" which can be expressed as 
+This program allows you to generate NetFlow V5 packets in various ways and
+send them to NetFlow collectors. You can control how each flow record
+should look like by using an "expression" which can be expressed as
 sequential, random, probablistic, or static numbers.
 
 Installation

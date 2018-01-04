@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2017  by Motonori Shindo <motonori@shin.do>
+ * Copyright (c) 2004-2018  by Motonori Shindo <motonori@shin.do>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -132,4 +132,3 @@ struct flow_exporter {
   int bucket_size;	/* when flow_cnt reaches bucket_size, flow_info will be flushed */
   struct flow_info fi[MAX_FLOW_INFO];
 };
-

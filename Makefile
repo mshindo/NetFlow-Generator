@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2004-2012  by Motonori Shindo <motonori@shin.do>
+# Copyright (c) 2004-2018  by Motonori Shindo <motonori@shin.do>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -60,4 +60,4 @@ uninstall:
 	rm -f $(DESTDIR)$(mandir)/man1/$(PROG).1
 
 clean:
-	rm -f $(PROG) $(OBJ) *~ 
+	rm -f $(PROG) $(OBJ) *~

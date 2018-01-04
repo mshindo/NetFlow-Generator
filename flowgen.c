@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2017  by Motonori Shindo <motonori@shin.do>
+ * Copyright (c) 2004-2018  by Motonori Shindo <motonori@shin.do>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,7 +19,7 @@
 
 /* TODO:
   - dns lookup for collector
-  - source ip spoof 
+  - source ip spoof
   - step support in range expression
   - absolute value for firstseen and last seen
 */
@@ -68,7 +68,7 @@ int nosend_f = FALSE;
 
 void usage(void)
 {
-  fprintf(stderr, 
+  fprintf(stderr,
 "Usage: flowgen [options] [flowrec-options] <collector>\n\
  options:\n\
    -n, --count <num>\n\
@@ -133,7 +133,7 @@ void compile_expr(const char *str, val_expr_t *e)
     e->mode = EXPR_TYPE_SEQ;
     e->start = e->end = atol(str);
     e->step = 0;
-    e->cur = e->start; 
+    e->cur = e->start;
     return;
   }
 
@@ -141,7 +141,7 @@ void compile_expr(const char *str, val_expr_t *e)
     e->mode = EXPR_TYPE_SEQ;
     sscanf(str, "%ld-%ld", &e->start, &e->end);
     e->step = 1;
-    e->cur = e->start; 
+    e->cur = e->start;
     return;
   }
 
@@ -149,7 +149,7 @@ void compile_expr(const char *str, val_expr_t *e)
     e->mode = EXPR_TYPE_RND;
     sscanf(str, "%ld:%ld", &e->start, &e->end);
     e->step = 1;
-    e->cur = e->start; 
+    e->cur = e->start;
     return;
   }
 
@@ -163,7 +163,7 @@ void compile_expr(const char *str, val_expr_t *e)
     while (*s) {
       int i;
       sscanf(s, "%ld@%d", &val, &p);
-      if (p + psum > 100) 
+      if (p + psum > 100)
 	break;
       for (i=0; i< p; i++) {
 	e->vals[psum + i] = val;
@@ -172,7 +172,7 @@ void compile_expr(const char *str, val_expr_t *e)
       c = strchr(s, ',');	/* XXX: consider case where s ends with ','! */
       if (c)
 	s = c + 1;
-      else 
+      else
 	break;
     }
     e->start = e->end = e->step = e->cur = 0; /* XXX */
@@ -202,7 +202,7 @@ void compile_ipaddr_expr(const char *str, ipaddr_expr_t *ie)
 	strncpy(buf, str, p - str);
 	compile_expr(buf, &octet);
 	memcpy(&(ie->exp[i]), &octet, sizeof(val_expr_t));
-	if (*p) 
+	if (*p)
 	  str = ++p;
 	break;
       } else {
@@ -224,13 +224,13 @@ long expr_val(val_expr_t *e)
     if (e->cur > e->end)
       e->cur = e->start;
     return val;
-  case EXPR_TYPE_RND: 
-    e->cur = 
-      (long)(random()/(double)RAND_MAX * (e->end - e->start) + e->start); 
-    if (e->cur < e->start || e->cur > e->end) 
+  case EXPR_TYPE_RND:
+    e->cur =
+      (long)(random()/(double)RAND_MAX * (e->end - e->start) + e->start);
+    if (e->cur < e->start || e->cur > e->end)
       fatal("unexpected random number");
     return e->cur;
-  case EXPR_TYPE_PRB: 
+  case EXPR_TYPE_PRB:
     e->cur = e->vals[(int)(random()/(double)RAND_MAX * (100-1))];
     return e->cur;
   default:
@@ -250,13 +250,13 @@ void expr_addr(char *ipaddr, ipaddr_expr_t *ie)
     if (octet[i] < 0 || octet[i] > 255) {
       fatal("ipaddr_expr error");
     }
-  }		
+  }
   sprintf(ipaddr, "%d.%d.%d.%d", octet[0], octet[1], octet[2], octet[3]);
 
 }
 
 /*
- * Returns sysuptime in millisecond 
+ * Returns sysuptime in millisecond
  *
  */
 #if 0
@@ -301,8 +301,8 @@ u_int32_t sysuptime(void)
     return ((u_int32_t)uptime);
   } else {
     gettimeofday(&tv, (struct timezone *)0);
-    return ((u_int32_t)(uptime + 
-			tv.tv_sec * 1000.0 + tv.tv_usec / 1000.0 - 
+    return ((u_int32_t)(uptime +
+			tv.tv_sec * 1000.0 + tv.tv_usec / 1000.0 -
 			init_tv.tv_sec * 1000.0 + init_tv.tv_usec / 1000.0));
   }
 }
@@ -326,7 +326,7 @@ u_int32_t sysuptime(void)
   }
   return uptime * 1000;		/* returns in millisec */
 }
-#endif 
+#endif
 
 void flush_flow(void)
 {
@@ -343,7 +343,7 @@ void flush_flow(void)
   pdu.hdr.unix_nsecs = htonl(tv.tv_usec * 1000);
   pdu.hdr.flow_sequence = htonl(Ex.flow_seen);
   pdu.hdr.engine_type = expr_val(&Ex.engine_type) & 0xff;
-  pdu.hdr.engine_id = expr_val(&Ex.engine_id) & 0xff; 
+  pdu.hdr.engine_id = expr_val(&Ex.engine_id) & 0xff;
   pdu.hdr.sampling = htons(0);
 
   memset(&pdu.rec[0], 0, sizeof(struct nf_v5_rec) * NF5_MAX_FLOWREC);
@@ -370,12 +370,12 @@ void flush_flow(void)
   }
 
   if (!nosend_f)
-    if (sendto(Ex.sock, &pdu, 
-	       sizeof(struct nf_v5_hdr) + 
+    if (sendto(Ex.sock, &pdu,
+	       sizeof(struct nf_v5_hdr) +
 	       sizeof(struct nf_v5_rec) * Ex.flow_cnt, 0,
-	       (struct sockaddr *)&Ex.to, sizeof(Ex.to)) == -1) 
+	       (struct sockaddr *)&Ex.to, sizeof(Ex.to)) == -1)
       perror("sendto");
-  
+
 
   Ex.pdu_sent++;
   Ex.flow_cnt = 0;
@@ -397,12 +397,12 @@ void cleanup(int val)
   struct timeval now;
 
   flush_flow();
-  fprintf(stderr, "\n%lu flows seen, %lu PDUs sent ", 
+  fprintf(stderr, "\n%lu flows seen, %lu PDUs sent ",
 	  Ex.flow_seen, Ex.pdu_sent);
 
   /* XXX: only care about sec, not usec */
   gettimeofday(&now, (struct timezone *)0);
-  fprintf(stderr, "(session rate = %lu/sec)\n", 
+  fprintf(stderr, "(session rate = %lu/sec)\n",
 	  Ex.flow_seen / (now.tv_sec - Ex.start.tv_sec));
 
   exit(0);
@@ -417,7 +417,7 @@ void init_exporter(const char *dst, u_int16_t port, u_int32_t flowrec_count)
 
   /* XXX: assumes dst is in XXX.XXX.XXX.XXX format */
   inet_aton(dst, &Ex.collector);
-  
+
   Ex.port = port;
 
   if ((Ex.sock = socket(PF_INET, SOCK_DGRAM, 0)) == -1) {
@@ -448,7 +448,7 @@ void init_exporter(const char *dst, u_int16_t port, u_int32_t flowrec_count)
 
 
 /*
- * 
+ *
  *
  */
 int main(int argc, char **argv)
@@ -480,9 +480,9 @@ int main(int argc, char **argv)
   char *dst_as = "201-210";
   char *src_mask = "24";
   char *dst_mask = "24";
-  val_expr_t 
-    wait_exp, intvl_exp, iif_exp, oif_exp, pkt_exp, oct_exp, 
-    fseen_exp, lseen_exp, srcp_exp, dstp_exp, tcpf_exp, 
+  val_expr_t
+    wait_exp, intvl_exp, iif_exp, oif_exp, pkt_exp, oct_exp,
+    fseen_exp, lseen_exp, srcp_exp, dstp_exp, tcpf_exp,
     proto_exp, tos_exp, srcas_exp, dstas_exp, srcmask_exp, dstmask_exp;
   ipaddr_expr_t
     srcaddr_exp, dstaddr_exp, nhop_exp;
@@ -490,13 +490,13 @@ int main(int argc, char **argv)
   long n = 0;
   int wait_f = FALSE;
   int c;
-  
+
   while (1) {
     int option_index = 0;
     static struct option long_options[] = {
       /*
 	const char *name
-	int has_arg 
+	int has_arg
 	int *flag
 	int val
       */
@@ -506,9 +506,9 @@ int main(int argc, char **argv)
       {"wait",		required_argument, NULL, 'w'},
       {"interval", 	required_argument, NULL, 'i'},
       {"flowrec",       required_argument, NULL, 'f'},
-      {"debug",    	required_argument, NULL, 'd'}, 
-      {"nosend",   	no_argument,       NULL, 'N'}, 
-      {"help",     	no_argument,       NULL, 'h'}, 
+      {"debug",    	required_argument, NULL, 'd'},
+      {"nosend",   	no_argument,       NULL, 'N'},
+      {"help",     	no_argument,       NULL, 'h'},
       {"enginetype", 	required_argument, NULL, OPT_ENGINETYPE},
       {"engineid", 	required_argument, NULL, OPT_ENGINEID},
       {"srcaddr",  	required_argument, NULL, OPT_SRCADDR},
@@ -532,7 +532,7 @@ int main(int argc, char **argv)
       {NULL, 0, NULL, 0}
     };
 
-    c = getopt_long(argc, argv, "n:s:p:w:i:f:d:Nh", 
+    c = getopt_long(argc, argv, "n:s:p:w:i:f:d:Nh",
 		    long_options, &option_index);
     if (c == -1)
       break;
@@ -642,7 +642,7 @@ int main(int argc, char **argv)
     case OPT_SRCAS:
       src_as = optarg;
       break;
-      
+
     case OPT_DSTAS:
       dst_as = optarg;
       break;
@@ -650,7 +650,7 @@ int main(int argc, char **argv)
     case OPT_SRCMASK:
       src_mask = optarg;
       break;
-      
+
     case OPT_DSTMASK:
       dst_mask = optarg;
       break;
@@ -763,20 +763,20 @@ int main(int argc, char **argv)
 
       if ((n % expr_val(&intvl_exp)) == 0) {
 	w = (unsigned long)expr_val(&wait_exp);
-	req.tv_sec = (w * 1000 * 1000) / 1000000000; 
-	req.tv_nsec = (w * 1000 * 1000) % 1000000000; 
-	if (nanosleep(&req, NULL) == -1) 
+	req.tv_sec = (w * 1000 * 1000) / 1000000000;
+	req.tv_nsec = (w * 1000 * 1000) % 1000000000;
+	if (nanosleep(&req, NULL) == -1)
 	  perror("nanosleep");
-      } 
+      }
     }
 
     n++;
-    if (!count) 
+    if (!count)
       continue;
-    else if (n >= count) 
+    else if (n >= count)
       break;
   }
-  
+
   flush_flow();
 
   if (debug)
