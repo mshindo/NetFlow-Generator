@@ -14,7 +14,7 @@ sequential, random, probablistic, or static numbers.
 Installation
 ------------
 
-How to compile & install this program is pretty straghtforward:
+How to compile & install this program is pretty straightforward:
 
  1. Edit Makefile accordingly
  2. make
