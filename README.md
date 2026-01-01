@@ -1,7 +1,7 @@
 flowgen
 =======
 
-by Motonori Shindo <motonori@shin.do> (2004 - 2025)
+by Motonori Shindo <motonori@shin.do> (2004 - 2026)
 
 Introduction
 ------------
